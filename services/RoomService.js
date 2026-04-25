@@ -1,75 +1,70 @@
 const { sequelize } = require("../models");
 const { QueryTypes } = require('sequelize');
+
 class RoomService {
     constructor(db) {
         this.client = db.sequelize;
     }
 
-    //Get all rooms using raw SQL
+    // Get all rooms using raw SQL
     async get() {
-        const rooms = await sequelize.query('SELECT * FROM rooms', {
-            type: QueryTypes.SELECT,
-        });
+        const rooms = await sequelize.query(
+            'SELECT * FROM Rooms',
+            { type: QueryTypes.SELECT }
+        );
         return rooms;
     }
 
-    //Create a room using raw SQL
+    // Create a room using raw SQL
     async create(capacity, pricePerDay, hotelId) {
-        sequelize.query('INSERT INTO rooms (Capacity, PricePerDay, HotelId) VALUES (:Capacity, :PricePerDay, :HotelId)', {
-            replacements:
+        return sequelize.query(
+            'INSERT INTO Rooms (Capacity, PricePerDay, HotelId) VALUES (:Capacity, :PricePerDay, :HotelId)',
             {
-                Capacity: capacity,
-                PricePerDay: pricePerDay,
-                HotelId: hotelId
+                replacements: {
+                    Capacity: capacity,
+                    PricePerDay: pricePerDay,
+                    HotelId: hotelId
+                }
             }
-        }).then(result => {
-            return result
-        }).catch(err => {
-            return (err)
-        })
+        );
     }
 
-    //Get all rooms for a specific hotel using raw SQL
+    // Get all rooms for a specific hotel using raw SQL
     async getHotelRooms(hotelId) {
-        const rooms = await sequelize.query('SELECT * FROM rooms WHERE HotelId = :hotelId', {
-            replacements:
+        const rooms = await sequelize.query(
+            'SELECT * FROM Rooms WHERE HotelId = :hotelId',
             {
-                hotelId: hotelId
-            },
-            type: QueryTypes.SELECT,
-        });
+                replacements: { hotelId },
+                type: QueryTypes.SELECT
+            }
+        );
         return rooms;
     }
 
-    //Delete a room using raw SQL
+    // Delete a room using raw SQL
     async deleteRoom(roomId) {
-        await sequelize.query('DELETE FROM rooms WHERE id = :roomId', {
-            replacements:
+        return sequelize.query(
+            'DELETE FROM Rooms WHERE id = :roomId',
             {
-                roomId: roomId
+                replacements: { roomId }
             }
-        }).then(result => {
-            return result
-        }).catch(err => {
-            return (err)
-        })
+        );
     }
 
-    //Rent a specified room using raw SQL
+    // Rent a specified room using raw SQL
     async rentARoom(userId, roomId, startDate, endDate) {
-        sequelize.query('CALL insert_reservation(:UserId, :RoomId, :StartDate, :EndDate)', {
-            replacements:
+        return sequelize.query(
+            'CALL insert_reservation(:UserId, :RoomId, :StartDate, :EndDate)',
             {
-                RoomId: roomId,
-                UserId: userId,
-                StartDate: startDate,
-                EndDate: endDate
+                replacements: {
+                    RoomId: roomId,
+                    UserId: userId,
+                    StartDate: startDate,
+                    EndDate: endDate
+                }
             }
-        }).then(result => {
-            return result
-        }).catch(err => {
-            return (err)
-        })
+        );
     }
 }
+
 module.exports = RoomService;
